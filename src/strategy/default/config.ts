@@ -52,24 +52,32 @@ export const DEFAULT_CONFIG: AgentConfig = {
   analyst_interval_ms: 120_000,
   premarket_plan_window_minutes: 5,
   market_open_execute_window_minutes: 2,
-  max_position_value: 5000,
-  max_positions: 5,
-  min_sentiment_score: 0.3,
-  min_analyst_confidence: 0.6,
-  take_profit_pct: 10,
-  stop_loss_pct: 5,
-  position_size_pct_of_cash: 25,
+  max_position_value: 2, // [TUNE] $2 max per trade — trading as if we have $100
+  max_positions: 5, // [TUNE] 5 positions x $2 = $10 max exposure
+  min_sentiment_score: 0.25, // [TUNE] Lowered from 0.3 — catch more signals early
+  min_analyst_confidence: 0.55, // [TUNE] Lowered from 0.6 — let the smarter analyst model make the call
+  take_profit_pct: 12, // [TUNE] Increased from 10 — let winners run a bit longer
+  stop_loss_pct: 4, // [TUNE] Tightened from 5 — cut losers faster
+  position_size_pct_of_cash: 2, // [TUNE] 2% of cash per position — micro sizing for $100 budget
   stale_position_enabled: true,
-  stale_min_hold_hours: 24,
+  stale_min_hold_hours: 18, // [TUNE] Reduced from 24 — exit stale positions sooner
   stale_max_hold_days: 3,
   stale_min_gain_pct: 5,
   stale_mid_hold_days: 2,
   stale_mid_min_gain_pct: 3,
   stale_social_volume_decay: 0.3,
-  llm_provider: "openai-raw",
-  llm_model: "gpt-4o-mini",
-  llm_analyst_model: "gpt-4o",
+
+  // LLM Configuration — ai-sdk mode enables multi-provider routing
+  // Research model: cheap + fast for bulk signal analysis
+  // Analyst model: smartest available for final BUY/SELL/HOLD decisions
+  llm_provider: "ai-sdk",
+  llm_model: "openai/gpt-4o-mini", // Research: cheap, handles bulk sentiment analysis
+  llm_analyst_model: "openai/gpt-4o", // Analyst: best available with OpenAI key
+  // UPGRADE: When you add ANTHROPIC_API_KEY, change analyst to:
+  //   "anthropic/claude-sonnet-4-0"  (great value, strong trading reasoning)
+  //   "anthropic/claude-opus-4-1"    (THE BEST for trading — 72% perfect score in benchmarks)
   llm_min_hold_minutes: 30,
+
   options_enabled: false,
   options_min_confidence: 0.8,
   options_max_pct_per_trade: 0.02,
@@ -80,12 +88,15 @@ export const DEFAULT_CONFIG: AgentConfig = {
   options_max_delta: 0.7,
   options_stop_loss_pct: 50,
   options_take_profit_pct: 100,
-  crypto_enabled: false,
+
+  // Crypto — enabled for 24/7 trading (markets never sleep)
+  crypto_enabled: true, // [TOGGLE] Enabled — trade crypto around the clock
   crypto_symbols: ["BTC/USD", "ETH/USD", "SOL/USD"],
   crypto_momentum_threshold: 2.0,
-  crypto_max_position_value: 1000,
+  crypto_max_position_value: 2, // [TUNE] $2 max per crypto trade
   crypto_take_profit_pct: 10,
   crypto_stop_loss_pct: 5,
+
   ticker_blacklist: [],
   allowed_exchanges: ["NYSE", "NASDAQ", "ARCA", "AMEX", "BATS"],
 };

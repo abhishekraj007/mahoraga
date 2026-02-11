@@ -127,6 +127,32 @@ export class MahoragaHarness extends DurableObject<Env> {
     return new Date(epochMs).toISOString().slice(0, 10);
   }
 
+  private parseModelJson<T>(content: string): T {
+    const cleaned = (content || "")
+      .replace(/```(?:json)?\n?/gi, "")
+      .replace(/```/g, "")
+      .trim();
+
+    const candidates: string[] = [cleaned];
+    const start = cleaned.indexOf("{");
+    const end = cleaned.lastIndexOf("}");
+    if (start !== -1 && end !== -1 && end > start) {
+      const sliced = cleaned.slice(start, end + 1).trim();
+      if (sliced && sliced !== cleaned) candidates.push(sliced);
+    }
+
+    for (const candidate of candidates) {
+      try {
+        return JSON.parse(candidate) as T;
+      } catch {
+        // try next candidate
+      }
+    }
+
+    const preview = cleaned.slice(0, 200);
+    throw new Error(`Invalid JSON response: ${preview}`);
+  }
+
   get llm(): LLMProvider | null {
     return this._llm;
   }
@@ -568,14 +594,14 @@ export class MahoragaHarness extends DurableObject<Env> {
       }
 
       const content = response.content || "{}";
-      const analysis = JSON.parse(content.replace(/```json\n?|```/g, "").trim()) as {
+      const analysis = this.parseModelJson<{
         verdict: "BUY" | "SKIP" | "WAIT";
         confidence: number;
         entry_quality: "excellent" | "good" | "fair" | "poor";
         reasoning: string;
         red_flags: string[];
         catalysts: string[];
-      };
+      }>(content);
 
       const result: ResearchResult = {
         symbol,
@@ -644,7 +670,7 @@ export class MahoragaHarness extends DurableObject<Env> {
       }
 
       const content = response.content || "{}";
-      const analysis = JSON.parse(content.replace(/```json\n?|```/g, "").trim());
+      const analysis = this.parseModelJson<Record<string, unknown>>(content);
       this.state.positionResearch[position.symbol] = { ...analysis, timestamp: Date.now() };
       this.log("PositionResearch", "position_analyzed", {
         symbol: position.symbol,
@@ -699,7 +725,7 @@ export class MahoragaHarness extends DurableObject<Env> {
       }
 
       const content = response.content || "{}";
-      const analysis = JSON.parse(content.replace(/```json\n?|```/g, "").trim()) as {
+      const analysis = this.parseModelJson<{
         recommendations: Array<{
           action: "BUY" | "SELL" | "HOLD";
           symbol: string;
@@ -709,7 +735,7 @@ export class MahoragaHarness extends DurableObject<Env> {
         }>;
         market_summary: string;
         high_conviction_plays?: string[];
-      };
+      }>(content);
 
       this.log("Analyst", "analysis_complete", {
         recommendations: analysis.recommendations?.length || 0,

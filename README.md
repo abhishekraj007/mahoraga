@@ -182,6 +182,8 @@ MAHORAGA supports multiple LLM providers via three modes:
 | `ai-sdk` | Vercel AI SDK with 5 providers | One or more provider keys |
 | `cloudflare-gateway` | Cloudflare AI Gateway (/compat) | `CLOUDFLARE_AI_GATEWAY_ACCOUNT_ID`, `CLOUDFLARE_AI_GATEWAY_ID`, `CLOUDFLARE_AI_GATEWAY_TOKEN` |
 
+Only one mode is active at a time. If you want a single gateway endpoint for multiple upstream providers, use `LLM_PROVIDER=cloudflare-gateway`.
+
 **Optional OpenAI Base URL Override:**
 
 - `OPENAI_BASE_URL` — Override the base URL used for OpenAI requests. Applies to `LLM_PROVIDER=openai-raw` and OpenAI models in `LLM_PROVIDER=ai-sdk` (models starting with `openai/`). Default: `https://api.openai.com/v1`.

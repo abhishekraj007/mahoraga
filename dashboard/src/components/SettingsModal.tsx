@@ -247,22 +247,29 @@ export function SettingsModal({ config, onSave, onClose }: SettingsModalProps) {
                 >
                   {(!localConfig.llm_provider || localConfig.llm_provider === 'openai-raw') && (
                     <>
+                      <option value="gpt-5-mini">gpt-5-mini</option>
+                      <option value="gpt-5-nano">gpt-5-nano</option>
+                      <option value="gpt-4.1-mini">gpt-4.1-mini</option>
                       <option value="gpt-4o-mini">gpt-4o-mini</option>
-                      <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
                     </>
                   )}
                   {localConfig.llm_provider === 'ai-sdk' && (
                     <>
                       <optgroup label="OpenAI">
+                        <option value="openai/gpt-5-mini">gpt-5-mini</option>
+                        <option value="openai/gpt-5-nano">gpt-5-nano</option>
+                        <option value="openai/gpt-4.1-mini">gpt-4.1-mini</option>
                         <option value="openai/gpt-4o-mini">gpt-4o-mini</option>
-                        <option value="openai/gpt-3.5-turbo">gpt-3.5-turbo</option>
                       </optgroup>
                       <optgroup label="Anthropic">
                         <option value="anthropic/claude-3-5-haiku-latest">claude-3.5-haiku</option>
                       </optgroup>
                       <optgroup label="Google">
+                        <option value="google/gemini-2.5-flash-lite">gemini-2.5-flash-lite</option>
                         <option value="google/gemini-2.5-flash">gemini-2.5-flash</option>
-                        <option value="google/gemini-2.0-flash">gemini-2.0-flash</option>
+                      </optgroup>
+                      <optgroup label="xAI">
+                        <option value="xai/grok-3-mini">grok-3-mini</option>
                       </optgroup>
                       <optgroup label="DeepSeek">
                         <option value="deepseek/deepseek-chat">deepseek-chat</option>
@@ -272,14 +279,20 @@ export function SettingsModal({ config, onSave, onClose }: SettingsModalProps) {
                   {localConfig.llm_provider === 'cloudflare-gateway' && (
                     <>
                       <optgroup label="OpenAI">
-                        <option value="openai/gpt-4o-mini">gpt-4o-mini</option>
                         <option value="openai/gpt-5-mini">gpt-5-mini</option>
+                        <option value="openai/gpt-5-nano">gpt-5-nano</option>
+                        <option value="openai/gpt-4.1-mini">gpt-4.1-mini</option>
+                        <option value="openai/gpt-4o-mini">gpt-4o-mini</option>
                       </optgroup>
                       <optgroup label="Anthropic">
-                        <option value="anthropic/claude-haiku-4-5">claude-haiku-4.5</option>
+                        <option value="anthropic/claude-3-5-haiku-latest">claude-3.5-haiku</option>
                       </optgroup>
                       <optgroup label="Google AI Studio">
+                        <option value="google-ai-studio/gemini-2.5-flash-lite">gemini-2.5-flash-lite</option>
                         <option value="google-ai-studio/gemini-2.5-flash">gemini-2.5-flash</option>
+                      </optgroup>
+                      <optgroup label="xAI">
+                        <option value="xai/grok-3-mini">grok-3-mini</option>
                       </optgroup>
                       <optgroup label="DeepSeek">
                         <option value="deepseek/deepseek-chat">deepseek-chat</option>
@@ -296,36 +309,46 @@ export function SettingsModal({ config, onSave, onClose }: SettingsModalProps) {
                 <label className="hud-label block mb-1">Analyst Model (smart)</label>
                 <select
                   className="hud-input w-full"
-                  value={localConfig.llm_analyst_model || 'gpt-4o'}
+                  value={localConfig.llm_analyst_model || 'gpt-5.1'}
                   onChange={e => handleChange('llm_analyst_model', e.target.value)}
                 >
                   {(!localConfig.llm_provider || localConfig.llm_provider === 'openai-raw') && (
                     <>
-                      <option value="gpt-5.2-2025-12-11">GPT-5.2 (best)</option>
+                      <option value="gpt-5.2">gpt-5.2</option>
+                      <option value="gpt-5.1">gpt-5.1</option>
+                      <option value="gpt-5">gpt-5</option>
+                      <option value="gpt-4.1">gpt-4.1</option>
                       <option value="gpt-4o">gpt-4o</option>
                       <option value="gpt-4o-mini">gpt-4o-mini (cheaper)</option>
+                      <option value="gpt-5.2-codex">gpt-5.2-codex (coding-focused)</option>
                     </>
                   )}
                   {localConfig.llm_provider === 'ai-sdk' && (
                     <>
                       <optgroup label="OpenAI">
+                        <option value="openai/gpt-5.2">gpt-5.2</option>
+                        <option value="openai/gpt-5.1">gpt-5.1</option>
+                        <option value="openai/gpt-5">gpt-5</option>
+                        <option value="openai/gpt-4.1">gpt-4.1</option>
                         <option value="openai/gpt-4o">gpt-4o</option>
-                        <option value="openai/o1">o1 (reasoning)</option>
-                        <option value="openai/o1-mini">o1-mini</option>
+                        <option value="openai/o3">o3 (reasoning)</option>
+                        <option value="openai/o4-mini">o4-mini</option>
+                        <option value="openai/gpt-5.2-codex">gpt-5.2-codex (coding-focused)</option>
                       </optgroup>
                       <optgroup label="Anthropic">
-                        <option value="anthropic/claude-3-7-sonnet-latest">claude-3.7-sonnet (best)</option>
-                        <option value="anthropic/claude-sonnet-4-0">claude-sonnet-4</option>
-                        <option value="anthropic/claude-opus-4-1">claude-opus-4</option>
+                        <option value="anthropic/claude-opus-4-1-20250805">claude-opus-4.1</option>
+                        <option value="anthropic/claude-opus-4-20250514">claude-opus-4</option>
+                        <option value="anthropic/claude-sonnet-4-20250514">claude-sonnet-4</option>
+                        <option value="anthropic/claude-3-7-sonnet-latest">claude-3.7-sonnet</option>
                       </optgroup>
                       <optgroup label="Google">
                         <option value="google/gemini-2.5-pro">gemini-2.5-pro</option>
-                        <option value="google/gemini-3-pro-preview">gemini-3-pro (preview)</option>
                       </optgroup>
                       <optgroup label="xAI">
                         <option value="xai/grok-4">grok-4</option>
-                        <option value="xai/grok-3">grok-3</option>
                         <option value="xai/grok-4-fast-reasoning">grok-4-fast-reasoning</option>
+                        <option value="xai/grok-3">grok-3</option>
+                        <option value="xai/grok-code-fast-1">grok-code-fast-1</option>
                       </optgroup>
                       <optgroup label="DeepSeek">
                         <option value="deepseek/deepseek-reasoner">deepseek-reasoner</option>
@@ -336,20 +359,28 @@ export function SettingsModal({ config, onSave, onClose }: SettingsModalProps) {
                   {localConfig.llm_provider === 'cloudflare-gateway' && (
                     <>
                       <optgroup label="OpenAI">
-                        <option value="openai/gpt-5.2">gpt-5.2 (best)</option>
+                        <option value="openai/gpt-5.2">gpt-5.2</option>
+                        <option value="openai/gpt-5.1">gpt-5.1</option>
                         <option value="openai/gpt-5">gpt-5</option>
+                        <option value="openai/gpt-4.1">gpt-4.1</option>
                         <option value="openai/gpt-4o">gpt-4o</option>
+                        <option value="openai/gpt-5.2-codex">gpt-5.2-codex (coding-focused)</option>
                       </optgroup>
                       <optgroup label="Anthropic">
-                        <option value="anthropic/claude-opus-4-5">claude-opus-4.5 (best)</option>
-                        <option value="anthropic/claude-sonnet-4-5">claude-sonnet-4.5</option>
+                        <option value="anthropic/claude-opus-4-1-20250805">claude-opus-4.1</option>
+                        <option value="anthropic/claude-opus-4-20250514">claude-opus-4</option>
+                        <option value="anthropic/claude-sonnet-4-20250514">claude-sonnet-4</option>
                       </optgroup>
                       <optgroup label="Google AI Studio">
                         <option value="google-ai-studio/gemini-2.5-pro">gemini-2.5-pro</option>
                       </optgroup>
-                      <optgroup label="Grok">
-                        <option value="grok/grok-4.1-fast-reasoning">grok-4.1-fast-reasoning</option>
-                        <option value="grok/grok-code-fast-1">grok-code-fast-1</option>
+                      <optgroup label="xAI">
+                        <option value="xai/grok-4">grok-4</option>
+                        <option value="xai/grok-4-fast-reasoning">grok-4-fast-reasoning</option>
+                        <option value="xai/grok-code-fast-1">grok-code-fast-1</option>
+                      </optgroup>
+                      <optgroup label="DeepSeek">
+                        <option value="deepseek/deepseek-reasoner">deepseek-reasoner</option>
                       </optgroup>
                     </>
                   )}
@@ -373,7 +404,7 @@ export function SettingsModal({ config, onSave, onClose }: SettingsModalProps) {
                 <input
                   type="number"
                   className="hud-input w-full"
-                  value={localConfig.starting_equity || 100000}
+                  value={localConfig.starting_equity || 1000}
                   onChange={e => handleChange('starting_equity', Number(e.target.value))}
                 />
                 <p className="text-xs text-hud-text-dim mt-1">For P&L calculation</p>

@@ -24,10 +24,10 @@ export type SupportedProvider = keyof typeof SUPPORTED_PROVIDERS;
  * Popular models per provider for dashboard UI
  */
 export const PROVIDER_MODELS: Record<SupportedProvider, string[]> = {
-  openai: ["gpt-4o-mini", "gpt-4o", "o1", "o1-mini"],
-  anthropic: ["claude-3-7-sonnet-latest", "claude-sonnet-4-0", "claude-opus-4-1", "claude-3-5-haiku-latest"],
+  openai: ["gpt-4o-mini", "gpt-4o", "gpt-5", "gpt-5-mini", "o1", "o1-mini", "o3", "o3-mini"],
+  anthropic: ["claude-opus-4-1", "claude-sonnet-4-0", "claude-3-7-sonnet-latest", "claude-3-5-haiku-latest"],
   google: ["gemini-2.5-pro", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-3-pro-preview"],
-  xai: ["grok-4", "grok-3", "grok-4-fast-reasoning"],
+  xai: ["grok-4", "grok-4-fast-reasoning", "grok-3"],
   deepseek: ["deepseek-chat", "deepseek-reasoner"],
 };
 

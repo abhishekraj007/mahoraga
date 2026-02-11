@@ -104,6 +104,40 @@ function getSentimentColor(score: number): string {
   return 'text-hud-warning'
 }
 
+function upperOr(value: unknown, fallback: string = 'UNKNOWN'): string {
+  if (typeof value === 'string' && value.trim().length > 0) return value.toUpperCase()
+  return fallback
+}
+
+function normalizeSignalResearch(raw: Partial<SignalResearch> | null | undefined): SignalResearch {
+  const verdict = raw?.verdict === 'BUY' || raw?.verdict === 'SKIP' || raw?.verdict === 'WAIT' ? raw.verdict : 'WAIT'
+  const entryQuality =
+    raw?.entry_quality === 'excellent' ||
+    raw?.entry_quality === 'good' ||
+    raw?.entry_quality === 'fair' ||
+    raw?.entry_quality === 'poor'
+      ? raw.entry_quality
+      : 'fair'
+
+  const confidence = typeof raw?.confidence === 'number' && Number.isFinite(raw.confidence) ? raw.confidence : 0
+  const sentiment = typeof raw?.sentiment === 'number' && Number.isFinite(raw.sentiment) ? raw.sentiment : 0
+  const timestamp = typeof raw?.timestamp === 'number' && Number.isFinite(raw.timestamp) ? raw.timestamp : Date.now()
+  const reasoning = typeof raw?.reasoning === 'string' ? raw.reasoning : 'No reasoning provided.'
+  const red_flags = Array.isArray(raw?.red_flags) ? raw.red_flags.filter((f): f is string => typeof f === 'string') : []
+  const catalysts = Array.isArray(raw?.catalysts) ? raw.catalysts.filter((c): c is string => typeof c === 'string') : []
+
+  return {
+    verdict,
+    confidence,
+    entry_quality: entryQuality,
+    reasoning,
+    red_flags,
+    catalysts,
+    sentiment,
+    timestamp,
+  }
+}
+
 async function fetchPortfolioHistory(period: string = '1D'): Promise<PortfolioSnapshot[]> {
   try {
     const timeframe = period === '1D' ? '15Min' : '1D'
@@ -224,7 +258,7 @@ export default function App() {
   const config = status?.config
   const isMarketOpen = status?.clock?.is_open ?? false
 
-  const startingEquity = config?.starting_equity || 100000
+  const startingEquity = config?.starting_equity || 1000
   const unrealizedPl = positions.reduce((sum, p) => sum + p.unrealized_pl, 0)
   const totalPl = account ? account.equity - startingEquity : 0
   const realizedPl = totalPl - unrealizedPl
@@ -638,7 +672,7 @@ export default function App() {
                       position="right"
                       content={
                         <TooltipContent
-                          title={`${sig.symbol} - ${sig.source.toUpperCase()}`}
+                          title={`${sig.symbol} - ${upperOr(sig.source)}`}
                           items={[
                             { label: 'Sentiment', value: `${(sig.sentiment * 100).toFixed(0)}%`, color: getSentimentColor(sig.sentiment) },
                             { label: 'Volume', value: sig.volume },
@@ -665,7 +699,7 @@ export default function App() {
                         <div className="flex items-center gap-2">
                           {sig.isCrypto && <span className="text-hud-warning text-xs">₿</span>}
                           <span className="hud-value-sm">{sig.symbol}</span>
-                          <span className={clsx('hud-label', sig.isCrypto ? 'text-hud-warning' : '')}>{sig.source.toUpperCase()}</span>
+                          <span className={clsx('hud-label', sig.isCrypto ? 'text-hud-warning' : '')}>{upperOr(sig.source)}</span>
                         </div>
                         <div className="flex items-center gap-3">
                           {sig.isCrypto && sig.momentum !== undefined ? (
@@ -724,9 +758,10 @@ export default function App() {
                 {Object.entries(status?.signalResearch || {}).length === 0 ? (
                   <div className="text-hud-text-dim text-sm py-4 text-center">Researching candidates...</div>
                 ) : (
-                  Object.entries(status?.signalResearch || {})
+                  (Object.entries(status?.signalResearch || {}) as Array<[string, Partial<SignalResearch>]>)
+                    .map(([symbol, raw]) => [symbol, normalizeSignalResearch(raw)] as const)
                     .sort(([, a], [, b]) => b.timestamp - a.timestamp)
-                    .map(([symbol, research]: [string, SignalResearch]) => (
+                    .map(([symbol, research]) => (
                     <Tooltip
                       key={symbol}
                       position="left"
