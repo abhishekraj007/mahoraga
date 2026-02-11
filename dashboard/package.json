@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "local": "vite",
+    "remote": "MAHORAGA_API_URL=https://mahoraga.abhishekrajemail.workers.dev vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview"
   },
